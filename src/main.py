@@ -1,12 +1,13 @@
 import copy
-from enum import IntFlag
+#from enum import IntFlag
 from time import sleep
 
-class FieldValue(IntFlag):
-    Empty = 0,
-    Wall = 1,
-    Player = 2,
-    Box = 4,
+# I tried to use enum here, but I was having a problem with packages in the image, so I gave up as I just want to get it done
+class FieldValue:
+    Empty = 0
+    Wall = 1
+    Player = 2
+    Box = 4
     Goal = 8
 
 
@@ -14,9 +15,9 @@ def mapStringToBoardRow(line):
     field_map = {
         '#': FieldValue.Wall,
         '@': FieldValue.Player,
-        '+': FieldValue.Player | FieldValue.Goal,
+        '+': (FieldValue.Player | FieldValue.Goal),
         '$': FieldValue.Box,
-        '*': FieldValue.Box | FieldValue.Goal,
+        '*': (FieldValue.Box | FieldValue.Goal),
         '.': FieldValue.Goal,
         ' ': FieldValue.Empty
     }
