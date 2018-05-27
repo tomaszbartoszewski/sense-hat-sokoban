@@ -70,17 +70,18 @@ sense = SenseHat()
 def print_to_senseHAT(level):
     field_to_colour_map = {
         FieldValue.Wall: (204, 4, 4),
-        FieldValue.Player: (1, 158, 1),
-        FieldValue.Player | FieldValue.Goal: (1, 158, 1),
-        FieldValue.Box: (112, 114, 112),
-        FieldValue.Box | FieldValue.Goal: (19, 20, 19),
+        FieldValue.Player: (255, 255, 255),
+        FieldValue.Player | FieldValue.Goal: (255, 255, 255),
+        FieldValue.Box: (234, 231, 51),
+        FieldValue.Box | FieldValue.Goal: (1, 158, 1),
         FieldValue.Goal: (13, 0, 198),
         FieldValue.Empty: (0, 0, 0)
     }
+
     sense.clear()
+    print(level)
     for row_index, row in enumerate(level):
         for column_index, cell in enumerate(row):
-            print(level)
             sense.set_pixel(column_index, row_index, field_to_colour_map[cell])
 
 
@@ -105,17 +106,24 @@ def get_player_position(level):
 
 
 def try_move(level, player_position, destination, behind):
-    print(player_position)
-    print(destination)
-    print(behind)
-
     if can_move(level, destination, behind):
-        print("Will move")
-        level[player_position[1]][player_position[0]] & ~FieldValue.Player
-        level[destination[1]][destination[0]] & ~FieldValue.Box
-        level[behind[1]][behind[0]] & FieldValue.Box
+        level[player_position[1]][player_position[0]] = level[player_position[1]][player_position[0]] & ~FieldValue.Player
+        level[destination[1]][destination[0]] = level[destination[1]][destination[0]] | FieldValue.Player
+        if level[destination[1]][destination[0]] & FieldValue.Box == FieldValue.Box:
+            level[destination[1]][destination[0]] = level[destination[1]][destination[0]] & ~FieldValue.Box
+            level[behind[1]][behind[0]] = level[behind[1]][behind[0]] | FieldValue.Box
+        print(level)
         return True
     return False
+
+
+def won(level):
+    for row in level:
+        for cell in row:
+            if cell & FieldValue.Goal == FieldValue.Goal and cell & FieldValue.Box != FieldValue.Box:
+                return False
+    return True
+
 
 
 def play_level(level):
@@ -125,15 +133,15 @@ def play_level(level):
     while True:
         if board_changed:
             board_changed = False
-            print("Let's refresh the board")
-            print_to_senseHAT(level)
+            (position_x, position_y) = get_player_position(current_state)
+            print_to_senseHAT(current_state)
+            if won(current_state):
+                sleep(1)
+                return
         for event in sense.stick.get_events():
-            print("The joystick was {} {}".format(event.action, event.direction))
             if event.action == "pressed":
-                print("Time to move")
                 if event.direction == "middle":
                     current_state = copy.deepcopy(level)
-                    (position_x, position_y) = get_player_position(current_state)
                     board_changed = True
                 elif event.direction == "up":
                     board_changed = try_move(current_state, (position_x, position_y), (position_x, position_y - 1),
@@ -151,9 +159,10 @@ def play_level(level):
 
 def main():
     levels = get_levels()
-    for level in levels:
+    for index, level in enumerate(levels):
+        sense.show_message(str(index), text_colour=[204, 4, 4])
+        sleep(2)
         play_level(copy.deepcopy(level))
-        sleep(1)
 
 
 if __name__ == '__main__':
