@@ -105,7 +105,12 @@ def get_player_position(level):
 
 
 def try_move(level, player_position, destination, behind):
+    print(player_position)
+    print(destination)
+    print(behind)
+
     if can_move(level, destination, behind):
+        print("Will move")
         level[player_position[1]][player_position[0]] & ~FieldValue.Player
         level[destination[1]][destination[0]] & ~FieldValue.Box
         level[behind[1]][behind[0]] & FieldValue.Box
@@ -120,10 +125,12 @@ def play_level(level):
     while True:
         if board_changed:
             board_changed = False
+            print("Let's refresh the board")
             print_to_senseHAT(level)
         for event in sense.stick.get_events():
             print("The joystick was {} {}".format(event.action, event.direction))
             if event.action == "pressed":
+                print("Time to move")
                 if event.direction == "middle":
                     current_state = copy.deepcopy(level)
                     (position_x, position_y) = get_player_position(current_state)
