@@ -65,7 +65,6 @@ def print_to_console(level):
         print()
 
 from sense_hat import SenseHat
-
 sense = SenseHat()
 
 def print_to_senseHAT(level):
@@ -81,7 +80,8 @@ def print_to_senseHAT(level):
     sense.clear()
     for row_index, row in enumerate(level):
         for column_index, cell in enumerate(row):
-            sense.set_pixel(row_index, column_index, field_to_colour_map[cell])
+            print(str(row_index) + " " + str(column_index) + " " + str(cell))
+            sense.set_pixel(column_index, row_index, field_to_colour_map[cell])
 
 
 def play_level(level):
