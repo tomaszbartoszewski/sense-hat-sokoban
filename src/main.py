@@ -84,9 +84,62 @@ def print_to_senseHAT(level):
             sense.set_pixel(column_index, row_index, field_to_colour_map[cell])
 
 
+def can_move(level, destination, behind):
+    (dest_x, dest_y) = destination
+    destination_value = level[dest_y][dest_x]
+    if destination_value == FieldValue.Wall:
+        return False
+    (behind_x, behind_y) = behind
+    behind_value = level[behind_y][behind_x]
+    if destination_value & FieldValue.Box == FieldValue.Box and (
+            behind_value & FieldValue.Box == FieldValue.Box or behind_value & FieldValue.Wall == FieldValue.Wall):
+        return False
+    return True
+
+
+def get_player_position(level):
+    for row_index, row in enumerate(level):
+        for column_index, cell in enumerate(row):
+            if cell & FieldValue.Player == FieldValue.Player:
+                return column_index, row_index
+
+
+def try_move(level, player_position, destination, behind):
+    if can_move(level, destination, behind):
+        level[player_position[1]][player_position[0]] & ~FieldValue.Player
+        level[destination[1]][destination[0]] & ~FieldValue.Box
+        level[behind[1]][behind[0]] & FieldValue.Box
+        return True
+    return False
+
+
 def play_level(level):
-    #print_to_console(level)
-    print_to_senseHAT(level)
+    current_state = copy.deepcopy(level)
+    (position_x, position_y) = get_player_position(current_state)
+    board_changed = True
+    while True:
+        if board_changed:
+            board_changed = False
+            print_to_senseHAT(level)
+        for event in sense.stick.get_events():
+            print("The joystick was {} {}".format(event.action, event.direction))
+            if event.action == "pressed":
+                if event.direction == "middle":
+                    current_state = copy.deepcopy(level)
+                    (position_x, position_y) = get_player_position(current_state)
+                    board_changed = True
+                elif event.direction == "up":
+                    board_changed = try_move(current_state, (position_x, position_y), (position_x, position_y - 1),
+                                             (position_x, position_y - 2))
+                elif event.direction == "down":
+                    board_changed = try_move(current_state, (position_x, position_y), (position_x, position_y + 1),
+                                             (position_x, position_y + 2))
+                elif event.direction == "left":
+                    board_changed = try_move(current_state, (position_x, position_y), (position_x - 1, position_y),
+                                             (position_x - 2, position_y))
+                elif event.direction == "right":
+                    board_changed = try_move(current_state, (position_x, position_y), (position_x + 1, position_y),
+                                             (position_x + 2, position_y))
 
 
 def main():
