@@ -80,7 +80,7 @@ def print_to_senseHAT(level):
     sense.clear()
     for row_index, row in enumerate(level):
         for column_index, cell in enumerate(row):
-            print(str(row_index) + " " + str(column_index) + " " + str(cell))
+            print(level)
             sense.set_pixel(column_index, row_index, field_to_colour_map[cell])
 
 
