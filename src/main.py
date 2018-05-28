@@ -38,7 +38,8 @@ def mapStringToBoardRow(line):
 
 
 def get_levels():
-    board_definition = open('BoardDefinition.txt', 'r')
+    board_definition = open('TestDefinition.txt', 'r')
+    #board_definition = open('BoardDefinition.txt', 'r')
 
     levels = []
     board = []
@@ -145,7 +146,7 @@ def play_level(level):
             (position_x, position_y) = get_player_position(current_state)
             print_to_senseHAT(current_state)
             if won(current_state):
-                sleep(1)
+                sleep(0.5)
                 return
         for event in sense.stick.get_events():
             if event.action == "pressed":
@@ -176,7 +177,7 @@ def show_victory_sequence():
         for x in range(start + 1, end):
             sense.set_pixel(x, start, colour)
             sense.set_pixel(x, end, colour)
-        sleep(0.5)
+        sleep(0.25)
 
 
 def main():
