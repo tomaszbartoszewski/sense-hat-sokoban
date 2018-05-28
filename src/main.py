@@ -11,6 +11,15 @@ class FieldValue:
     Goal = 8
 
 
+class SenseHATColour:
+    Red = (204, 4, 4),
+    White = (255, 255, 255),
+    Yellow = (234, 231, 51),
+    Green = (1, 158, 1),
+    Blue = (13, 0, 198),
+    Black = (0, 0, 0)
+
+
 def mapStringToBoardRow(line):
     field_map = {
         '#': FieldValue.Wall,
@@ -69,13 +78,13 @@ sense = SenseHat()
 
 def print_to_senseHAT(level):
     field_to_colour_map = {
-        FieldValue.Wall: (204, 4, 4),
-        FieldValue.Player: (255, 255, 255),
-        FieldValue.Player | FieldValue.Goal: (255, 255, 255),
-        FieldValue.Box: (234, 231, 51),
-        FieldValue.Box | FieldValue.Goal: (1, 158, 1),
-        FieldValue.Goal: (13, 0, 198),
-        FieldValue.Empty: (0, 0, 0)
+        FieldValue.Wall: SenseHATColour.Red,
+        FieldValue.Player: SenseHATColour.White,
+        FieldValue.Player | FieldValue.Goal: SenseHATColour.White,
+        FieldValue.Box: SenseHATColour.Yellow,
+        FieldValue.Box | FieldValue.Goal: SenseHATColour.Green,
+        FieldValue.Goal: SenseHATColour.Blue,
+        FieldValue.Empty: SenseHATColour.Black
     }
 
     sense.clear()
@@ -157,12 +166,28 @@ def play_level(level):
                                              (position_x + 2, position_y))
 
 
+def show_victory_sequence():
+    victory_sequence = [(SenseHATColour.Red, 3, 4), (SenseHATColour.Blue, 2, 5), (SenseHATColour.Green, 1, 6), (SenseHATColour.Yellow, 0, 7)]
+    sense.clear()
+    for colour, start, end in victory_sequence:
+        for y in range(start, end + 1):
+            sense.set_pixel(start, y, colour)
+            sense.set_pixel(end, y, colour)
+        for x in range(start + 1, end):
+            sense.set_pixel(x, start, colour)
+            sense.set_pixel(x, end, colour)
+        sleep(0.5)
+
+
 def main():
     levels = get_levels()
-    for index, level in enumerate(levels):
-        sense.show_message(str(index), text_colour=[204, 4, 4])
-        sleep(2)
-        play_level(copy.deepcopy(level))
+    while True:
+        for index, level in enumerate(levels):
+            sense.show_message(str(index + 1), text_colour = list(SenseHATColour.Red))
+            play_level(copy.deepcopy(level))
+            show_victory_sequence()
+
+        sense.show_message("You won!", text_colour = list(SenseHATColour.Green))
 
 
 if __name__ == '__main__':
