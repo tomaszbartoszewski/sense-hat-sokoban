@@ -12,11 +12,11 @@ class FieldValue:
 
 
 class SenseHATColour:
-    Red = (204, 4, 4),
-    White = (255, 255, 255),
-    Yellow = (234, 231, 51),
-    Green = (1, 158, 1),
-    Blue = (13, 0, 198),
+    Red = (204, 4, 4)
+    White = (255, 255, 255)
+    Yellow = (234, 231, 51)
+    Green = (1, 158, 1)
+    Blue = (13, 0, 198)
     Black = (0, 0, 0)
 
 
