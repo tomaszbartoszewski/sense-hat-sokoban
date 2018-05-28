@@ -38,8 +38,8 @@ def mapStringToBoardRow(line):
 
 
 def get_levels():
-    board_definition = open('TestDefinition.txt', 'r')
-    #board_definition = open('BoardDefinition.txt', 'r')
+    #board_definition = open('TestDefinition.txt', 'r')
+    board_definition = open('BoardDefinition.txt', 'r')
 
     levels = []
     board = []
